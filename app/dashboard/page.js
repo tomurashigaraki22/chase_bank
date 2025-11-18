@@ -1,5 +1,8 @@
 // c:\Users\emman\OneDrive\Desktop\chase_bank\app\dashboard\page.js
+"use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Wallet,
   PiggyBank,
@@ -19,6 +22,20 @@ import {
 } from "lucide-react";
 
 export default function Dashboard() {
+  const router = useRouter();
+  const [firstName, setFirstName] = useState("");
+  useEffect(() => {
+    try {
+      const t = localStorage.getItem("session");
+      if (!t) return;
+      fetch("/api/me", { headers: { Authorization: `Bearer ${t}` } })
+        .then((r) => (r.ok ? r.json() : Promise.reject()))
+        .then((d) => {
+          if (d && d.user && d.user.first_name) setFirstName(d.user.first_name);
+        })
+        .catch(() => {});
+    } catch {}
+  }, []);
   return (
     <div className="min-h-screen bg-white">
       <div className="border-b">
@@ -35,7 +52,7 @@ export default function Dashboard() {
             <button className="rounded p-2 hover:bg-gray-100"><Settings size={18} /></button>
             <button className="flex items-center gap-2 rounded px-3 py-1 hover:bg-gray-100">
               <UserCircle size={20} />
-              <span className="text-sm text-chase-navy">Emmanuel</span>
+              <span className="text-sm text-chase-navy">{firstName || "User"}</span>
               <ChevronDown size={16} />
             </button>
           </div>

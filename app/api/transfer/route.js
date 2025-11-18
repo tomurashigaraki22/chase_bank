@@ -5,8 +5,8 @@ import { verifyToken } from "../../../lib/auth";
 import { cookies } from "next/headers";
 
 export async function POST(req) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("session")?.value || "";
+  const auth = req.headers.get("authorization") || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
   const payload = verifyToken(token);
   if (!payload) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

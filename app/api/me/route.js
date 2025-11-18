@@ -1,14 +1,14 @@
-// c:\Users\emman\OneDrive\Desktop\chase_bank\app\api\accounts\route.js
+// c:\Users\emman\OneDrive\Desktop\chase_bank\app\api\me\route.js
 import { NextResponse } from "next/server";
 import db from "../../../lib/db";
 import { verifyToken } from "../../../lib/auth";
-import { cookies } from "next/headers";
 
 export async function GET(req) {
   const auth = req.headers.get("authorization") || "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
   const payload = verifyToken(token);
   if (!payload) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const accounts = db.prepare("SELECT id, type, number, balance, status FROM accounts WHERE user_id = ? ORDER BY id").all(Number(payload.uid));
-  return NextResponse.json({ accounts });
+  const user = db.prepare("SELECT id, email, first_name, last_name, created_at FROM users WHERE id = ?").get(Number(payload.uid));
+  if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json({ user });
 }
