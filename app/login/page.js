@@ -22,6 +22,7 @@ export default function Login() {
         body: JSON.stringify({ email, password })
       });
       const data = await res.json();
+      console.log("Data; ", data)
       if (!res.ok) {
         setError(data.error || "Login failed");
       } else {
