@@ -24,6 +24,7 @@ import {
 export default function Dashboard() {
   const router = useRouter();
   const [firstName, setFirstName] = useState("");
+  const [acc, setAcc] = useState([]);
   useEffect(() => {
     try {
       const t = localStorage.getItem("session");
@@ -33,6 +34,10 @@ export default function Dashboard() {
         .then((d) => {
           if (d && d.user && d.user.first_name) setFirstName(d.user.first_name);
         })
+        .catch(() => {});
+      fetch("/api/accounts", { headers: { Authorization: `Bearer ${t}` } })
+        .then((r) => (r.ok ? r.json() : Promise.reject()))
+        .then((d) => setAcc(d.accounts || []))
         .catch(() => {});
     } catch {}
   }, []);
@@ -65,7 +70,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500">Total balance</p>
-                <h2 className="mt-1 text-3xl font-semibold text-chase-navy">$12,534.87</h2>
+                <h2 className="mt-1 text-3xl font-semibold text-chase-navy">{`${(((acc.find(a=>a.type==='checking')?.balance||0)+(acc.find(a=>a.type==='savings')?.balance||0)+(acc.find(a=>a.type==='card')?.balance||0)).toFixed(2))}`}</h2>
               </div>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2 text-green-600"><ArrowUpRight size={18} /><span className="text-sm">+$3,420</span></div>
@@ -76,8 +81,8 @@ export default function Dashboard() {
               <div className="rounded-md border p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-gray-500">Checking ••••1234</p>
-                    <p className="text-lg font-semibold text-chase-navy">$6,120.44</p>
+                    <p className="text-xs text-gray-500">Checking ••••{(acc.find(a=>a.type==='checking')?.number || '').slice(-4)}</p>
+                    <p className="text-lg font-semibold text-chase-navy">{`${((acc.find(a=>a.type==='checking')?.balance||0).toFixed(2))}`}</p>
                   </div>
                   <Wallet size={20} className="text-chase-blue" />
                 </div>
@@ -86,8 +91,8 @@ export default function Dashboard() {
               <div className="rounded-md border p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-gray-500">Savings ••••8890</p>
-                    <p className="text-lg font-semibold text-chase-navy">$5,402.18</p>
+                    <p className="text-xs text-gray-500">Savings ••••{(acc.find(a=>a.type==='savings')?.number || '').slice(-4)}</p>
+                    <p className="text-lg font-semibold text-chase-navy">{`${((acc.find(a=>a.type==='savings')?.balance||0).toFixed(2))}`}</p>
                   </div>
                   <PiggyBank size={20} className="text-chase-blue" />
                 </div>
@@ -96,12 +101,12 @@ export default function Dashboard() {
               <div className="rounded-md border p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-gray-500">Travel card ••••1122</p>
-                    <p className="text-lg font-semibold text-chase-navy">$1,012.25</p>
+                    <p className="text-xs text-gray-500">Travel card ••••{(acc.find(a=>a.type==='card')?.number || '').slice(-4)}</p>
+                    <p className="text-lg font-semibold text-chase-navy">{`${((acc.find(a=>a.type==='card')?.balance||0).toFixed(2))}`}</p>
                   </div>
                   <CreditCard size={20} className="text-chase-blue" />
                 </div>
-                <span className="mt-3 inline-block rounded-full bg-red-50 text-red-700 text-xs px-2 py-1">Frozen</span>
+                <span className="mt-3 inline-block rounded-full bg-red-50 text-red-700 text-xs px-2 py-1">{(acc.find(a=>a.type==='card')?.status || 'frozen').charAt(0).toUpperCase() + (acc.find(a=>a.type==='card')?.status || 'frozen').slice(1)}</span>
               </div>
             </div>
           </div>
