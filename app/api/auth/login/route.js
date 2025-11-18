@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import db from "../../../../lib/db";
 import { verifyPassword, signToken } from "../../../../lib/auth";
 
+export const runtime = "nodejs";
+
 export async function POST(req) {
   const b = await req.json();
   const email = String(b.email || "").toLowerCase().trim();

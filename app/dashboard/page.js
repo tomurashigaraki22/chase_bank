@@ -81,7 +81,7 @@ export default function Dashboard() {
                   </div>
                   <Wallet size={20} className="text-chase-blue" />
                 </div>
-                <span className="mt-3 inline-block rounded-full bg-green-50 text-green-700 text-xs px-2 py-1">Active</span>
+                <span className="mt-3 inline-block rounded-full bg-green-50 text-green-700 text-xs px-2 py-1">{(acc.find(a=>a.type==='checking')?.status || 'active').charAt(0).toUpperCase() + (acc.find(a=>a.type==='checking')?.status || 'active').slice(1)}</span>
               </div>
               <div className="rounded-md border p-4">
                 <div className="flex items-center justify-between">
@@ -91,7 +91,7 @@ export default function Dashboard() {
                   </div>
                   <PiggyBank size={20} className="text-chase-blue" />
                 </div>
-                <span className="mt-3 inline-block rounded-full bg-green-50 text-green-700 text-xs px-2 py-1">Active</span>
+                <span className="mt-3 inline-block rounded-full bg-green-50 text-green-700 text-xs px-2 py-1">{(acc.find(a=>a.type==='savings')?.status || 'active').charAt(0).toUpperCase() + (acc.find(a=>a.type==='savings')?.status || 'active').slice(1)}</span>
               </div>
               <div className="rounded-md border p-4">
                 <div className="flex items-center justify-between">

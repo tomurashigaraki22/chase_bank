@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import db from "../../../../lib/db";
 import { hashPassword, signToken } from "../../../../lib/auth";
 
+export const runtime = "nodejs";
+
 function accountNumber() {
   return "4" + Math.floor(Math.random() * 1e11).toString().padStart(11, "0");
 }
